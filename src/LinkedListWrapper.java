@@ -25,4 +25,16 @@ public class LinkedListWrapper {
     public LinkedList getLinkedList() {
         return this.linkedList;
     }
+
+    public void add(String string) {
+        this.linkedList.add(string);
+    }
+
+    public void remove(String string) {
+        this.linkedList.remove(string);
+    }
+
+    public boolean contains(String string) {
+        return this.linkedList.contains(string);
+    }
 }

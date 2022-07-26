@@ -10,14 +10,10 @@
  */
 public class ClosedHashSet extends SimpleHashSet {
 
-
-    //the ash set
     private String[] hashSet;
 
 
-
     // ----------------------8888     constructors     8888--------------------------- //
-
 
 
     /**
@@ -27,10 +23,10 @@ public class ClosedHashSet extends SimpleHashSet {
      * @param lowerLoadFactor - The lower load factor of the hash table.
      */
     public ClosedHashSet(float upperLoadFactor, float lowerLoadFactor) {
-        upperLoFactor = upperLoadFactor;
-        lowerLoFactor = lowerLoadFactor;
-        hashSet = new String[INITIAL_CAPACITY];
-        currentCapacity = INITIAL_CAPACITY;
+        this.upperLoadFactor = upperLoadFactor;
+        this.lowerLoadFactor = lowerLoadFactor;
+        this.currentCapacity = INITIAL_CAPACITY;
+        this.hashSet = new String[INITIAL_CAPACITY];
     }
 
 
@@ -39,10 +35,10 @@ public class ClosedHashSet extends SimpleHashSet {
      * upper load factor (0.75) and lower load factor (0.25).
      */
     public ClosedHashSet() {
-        upperLoFactor = DEFAULT_HIGHER_CAPACITY;
-        lowerLoFactor = DEFAULT_LOWER_CAPACITY;
-        hashSet = new String[INITIAL_CAPACITY];
-        currentCapacity = INITIAL_CAPACITY;
+        this.upperLoadFactor = DEFAULT_HIGHER_CAPACITY;
+        this.lowerLoadFactor = DEFAULT_LOWER_CAPACITY;
+        this.currentCapacity = INITIAL_CAPACITY;
+        this.hashSet = new String[INITIAL_CAPACITY];
     }
 
 
@@ -53,20 +49,16 @@ public class ClosedHashSet extends SimpleHashSet {
      *
      * @param data - Values to add to the set.
      */
-    public ClosedHashSet(java.lang.String[] data) {
-        upperLoFactor = DEFAULT_HIGHER_CAPACITY;
-        lowerLoFactor = DEFAULT_LOWER_CAPACITY;
-        hashSet = new String[INITIAL_CAPACITY];
-        currentCapacity = INITIAL_CAPACITY;
-        for (String object : data) {
-            this.add(object);
-        }
+    public ClosedHashSet(String[] data) throws Exception {
+        this.upperLoadFactor = DEFAULT_HIGHER_CAPACITY;
+        this.lowerLoadFactor = DEFAULT_LOWER_CAPACITY;
+        this.currentCapacity = INITIAL_CAPACITY;
+        this.hashSet = new String[INITIAL_CAPACITY];
+        for(String o : data) { this.add(o); }
     }
 
 
-
     // ----------------------8888    inherited methods     8888--------------------------- //
-
 
 
     //see in SimpleHashSet.
@@ -78,16 +70,13 @@ public class ClosedHashSet extends SimpleHashSet {
 
     //see in SimpleHashSet.
     @Override
-    public int clamp(int index) {
+    public int clamp(int hash) {
         int c;
         int i = 0;
-        int j = 0;
-        // as explained in the instructions.
-        c = ((index + ((i + j) / 2)) & (this.capacity() - 1));
+        c = (hash + (i + (int) Math.pow(i, 2)) / 2) & (this.capacity() - 1);
         while (this.hashSet[c] != null) {
-            i += 1;
-            j = i ^ 2;
-            c = ((index + ((i + j) / 2)) & this.capacity() - 1);
+            c = (hash + (i + (int) Math.pow(i, 2)) / 2) & (this.capacity() - 1);
+            i++;
         }
         return c;
     }
@@ -95,121 +84,68 @@ public class ClosedHashSet extends SimpleHashSet {
 
     //see in SimpleSet.
     @Override
-    public boolean contains(String searchVal) {
-        for (Object object : this.hashSet) {
-            if (object != null) {
-                if (object.equals(searchVal)) {
-                    return true;
+    public boolean contains(String o) {
+        for (String str : this.hashSet) {
+            if (str != null && str.equals(o)) { return true; }
+        }
+        return false;
+    }
+
+
+    //see in SimpleSet.
+    @Override
+    public boolean delete(String o) throws Exception {
+        for (int i = 0; i < hashSet.length; i++) {
+            if (hashSet[i] != null && hashSet[i].equals(o)) {
+                hashSet[i] = null;
+                this.size--;
+
+                if (SizeCapacityRatio(this.size() - 1, this.capacity()) < lowerLoadFactor &&
+                        this.capacity() > 16) {
+                    raisingTable(false);
                 }
-            }
-        }
-        return false;
-    }
-
-
-    //see in SimpleSet.
-    @Override
-    public int size() {
-        int SumOfElements = 0;
-        for (Object object : hashSet) {
-            if (object != null) {
-                SumOfElements++;
-            }
-        }
-        return SumOfElements;
-    }
-
-
-    //see in SimpleSet.
-    @Override
-    public boolean add(String newValue) {
-        //making sure that the object is not all ready in the set.
-        if (!contains(newValue)) {
-            int size = this.size() + 1;
-            int capacity = this.capacity();
-            //if the ratio is bigger then the upper load factor the function increasing the table.
-            if (upperLoFactor < SizeCapacityRatio(size, capacity)) {
-                this.hashSet = raisingTable(this.hashSet, true);
-                addHelper(newValue);
                 return true;
-                //if the ratio is smaller then the lower load factor the function decreasing the table.
-            } else if (SizeCapacityRatio(size, capacity) < lowerLoFactor) {
-                this.hashSet = raisingTable(this.hashSet, false);
-                addHelper(newValue);
-                return true;
-            } else {
-                addHelper(newValue);
-            }
-            return true;
-        }
-        return false;
-    }
-
-
-    //see in SimpleSet.
-    @Override
-    public boolean delete(java.lang.String toDelete) {
-        int size = this.size() - 1;
-        int capacity = this.capacity();
-        for (int c = 0; c <= hashSet.length - 1; c++) {
-            if (hashSet[c] != null) {
-                if (hashSet[c].equals(toDelete)) {
-                    hashSet[c] = null;
-                    //if the ratio is smaller then the lower load factor the function decreasing the table.
-                    if (SizeCapacityRatio(size, capacity) < lowerLoFactor) {
-                        hashSet = raisingTable(hashSet, false);
-                        return true;
-                        //if the ratio is bigger then the upper load factor the function increasing the table.
-                    } else if (upperLoFactor < SizeCapacityRatio(size, capacity)) {
-                        hashSet = raisingTable(hashSet, true);
-                        return true;
-                    }
-                    //if none of them
-                    return true;
-                }
             }
         }
         return false;
     }
-
 
 
     // ----------------------8888    private methods     8888--------------------------- //
 
 
-
-
     /**
      * this function helping to the add function.
      *
-     * @param newValue - the value that go to the hash table.
+     * @param o - the value that go to the hash table.
      */
-    private void addHelper(String newValue) {
-        int hashCode = newValue.hashCode();
-        int finalIndex = clamp(hashCode);
-        this.hashSet[finalIndex] = newValue;
+    @Override
+    protected void addHelper(String o) throws Exception {
+        int finalIndex = clamp(o.hashCode());
+        try{
+            this.hashSet[finalIndex] = o;
+        } catch (Exception e){
+            throw new Exception("Error occured in the addHelper(String newValue); " +
+                    "when adding new element after getting index from the hash function. e.getMessage():"
+                    + e.getMessage());
+        }
     }
 
 
     /**
      * this function raise the table and increases or decreases the hash table.
      *
-     * @param hashSet         - the hash table that need to change.
-     * @param BiggerOrSmaller - true if the table need to get bigger, false if the table need to get smaller.
+     * @param increase - true if the table need to get bigger, false if the table need to get smaller.
      * @return the new table after the change.
      */
-    private String[] raisingTable(String[] hashSet, boolean BiggerOrSmaller) {
-        if (BiggerOrSmaller) {
-            currentCapacity *= 2;
-        } else {
-            currentCapacity /= 2;
-        }
+    @Override
+    protected void raisingTable(boolean increase) throws Exception{
+        this.currentCapacity = increase ? this.currentCapacity * 2 : this.currentCapacity / 2;
+        String[] temp = this.hashSet;
         this.hashSet = new String[currentCapacity];
-        for (String string : hashSet) {
-            if (string != null) {
-                addHelper(string);
-            }
+
+        for (String o : temp) {
+            if (o != null) { addHelper(o); }
         }
-        return this.hashSet;
     }
 }

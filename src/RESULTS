@@ -2,7 +2,7 @@
 #You should replace each X with the corresponding value
 
 #These values correspond to the time it takes (in ms) to insert data1 to all data structures
-OpenHashSet_AddData1 = 38542 ms
+OpenHashSet_AddData1 = 37441 ms
 ClosedHashSet_AddData1 = not work
 TreeSet_AddData1 = 85 ms
 LinkedList_AddData1 = 42355 ms
@@ -18,7 +18,7 @@ HashSet_AddData2 = 7 ms
 #These values correspond to the time it takes (in ns) to check if "hi" is contained in
 #the data structures initialized with data1
 OpenHashSet_Contains_hi1 = 1260700 ns
-ClosedHashSet_Contains_hi1 = X
+ClosedHashSet_Contains_hi1 = not work
 TreeSet_Contains_hi1 = 10300 ns
 LinkedList_Contains_hi1 = 1137800 ns
 HashSet_Contains_hi1 = 2500 ns
@@ -26,7 +26,7 @@ HashSet_Contains_hi1 = 2500 ns
 #These values correspond to the time it takes (in ns) to check if "-13170890158" is contained in
 #the data structures initialized with data1
 OpenHashSet_Contains_negative = 1625800 ns
-ClosedHashSet_Contains_negative = X
+ClosedHashSet_Contains_negative = not work
 TreeSet_Contains_negative = 6200 ns
 LinkedList_Contains_negative = 1171300 ns
 HashSet_Contains_negative = 2800 ns
